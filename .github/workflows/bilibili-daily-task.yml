@@ -7,7 +7,7 @@ on:
     branches: [ main ]
   workflow_dispatch: # 手动触发
   schedule: # 计划任务触发
-    - cron: '10 6 * * *' # cron表达式，Actions时区是UTC时间，所以要往前推8个小时,如上表示每天14点10分
+    - cron: '10 6 * * *' # cron表达式，Actions时区是UTC时间，比我们早8小时，要用我们的时间减去8小时后填上去，如上所表示的是每天14点10分
     
 
 jobs:
@@ -16,14 +16,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    
-    # 检出
-    - name: Checkout
-      uses: actions/checkout@v2
-      
+
+    # 输出IP
+    - name: IP
+      run: sudo ifconfig -a
+
     # 设置服务器时区为东八区 
     - name: Set time zone
       run: sudo timedatectl set-timezone 'Asia/Shanghai'
+
+    # 检出
+    - name: Checkout
+      uses: actions/checkout@v2
       
     # .Net 环境
     - name: Setup .NET
@@ -48,8 +52,10 @@ jobs:
         Ray_BiliBiliCookie:BiliJct: ${{secrets.BILIJCT}}
         Ray_BiliBiliCookie:Bili_jct: ${{secrets.BILI_JCT}} # 为了兼容 GitHub Secrets 经常会被填错
         Ray_Push:PushScKey: ${{secrets.PUSHSCKEY}}
+        Ray_Security:IsSkipDailyTask: ${{secrets.ISSKIPDAILYTASK}}
         Ray_Security:IntervalSecondsBetweenRequestApi: ${{secrets.INTERVALSECONDSBETWEENREQUESTAPI}}
         Ray_Security:IntervalMethodTypes: ${{secrets.INTERVALMETHODTYPES}}
+        Ray_Security:UserAgent: ${{secrets.USERAGENT}}
         Ray_DailyTaskConfig:NumberOfCoins: ${{secrets.NUMBEROFCOINS}}
         Ray_DailyTaskConfig:SelectLike: ${{secrets.SELECTLIKE}}
         Ray_DailyTaskConfig:SupportUpIds: ${{secrets.SUPPORTUPIDS}}
